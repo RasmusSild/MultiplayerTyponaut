@@ -8,40 +8,227 @@
     <title>Typonaut</title>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/main.css"/>
 </head>
 
 <body>
 
-<header>
-    <div class="flex">
-        <div class="form-group">
-            <div class="input-group">
-                <input type="text" class="form-control" id="word">
-                <!--<span class="input-group-btn">-->
-                <button class="btn btn-success" type="button" onclick="send(word.value)">Send</button>
-                <!--</span>-->
+<div class="container" id="nameContainer" style="margin-bottom:50px;">
+    <div class="row">
+        <div class="col-xs-2">
+            <h4 id="myName">Me:  </h4>
+            <h4 id="opName">Opponent:  </h4>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="onlineUsers" style="margin-bottom:100px;">
+    <div class="row">
+        <div class="col-xs-3">
+            <div class="well">
+                <h3>Online Users:</h3>
+                <ul class="list-group" id="users"></ul>
             </div>
         </div>
     </div>
-</header>
+    <div class="row">
+        <div class="col-xs-9">
+            <div class="well">
+                <h3>Challenges:</h3>
+                <ul class="list-group" id="challenges">
+                    <li class="list-group-item">You have no challenges yet</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="userFormArea">
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="col-xs-4">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label for="username">Enter Username</label>
+                        <input class="form-control" id="username"/>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Enter"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="gameArea">
+    <div class="flex row">
+        <div class="col-xs-4">
+            <div class="form-group col-xs-4">
+                <h3>The word is:</h3>
+                <h3 id="wordToWrite"></h3>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="wordInput">
+                    <!--<span class="input-group-btn">-->
+                    <button class="btn btn-success" type="button" onclick="send($wordInput.value)">Send</button>
+                    <!--</span>-->
+                </div>
+                <h4 id="messageContainer"></h4>
+            </div>
+            <ul class="list-group" id="scores"></ul>
+        </div>
+    </div>
+</div>
 
 
 </body>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/jquery/dist/jquery.min.js"></script>
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<script src="socket.io/socket.io.js"></script>
 
 <script>
     var socket = io();
     var playerID;
-    function send(word) {
-        socket.emit(word, {
-            player: playerID
+    var $userForm = $("#userForm");
+    var $userFormArea = $("#userFormArea");
+    var $users = $("#users");
+    var $userName = $("#username");
+    var $onlineUsersArea = $("#onlineUsers");
+    var $gameArea = $("#gameArea");
+    var $game = $("#game");
+    var $wordToWrite = $("#wordToWrite");
+    var $wordInput = $("#wordInput");
+    var $challenges = $("#challenges");
+    var $messages = $("#messageContainer");
+    var $scores = $("#scores");
+    var $nameContainer = $("#nameContainer");
+    var $myName = $("#myName");
+    var $opName = $("#opName");
+    var myChallenges = [];
+    var currentGame;
+
+    $( document ).ready(function() {
+        $onlineUsersArea.hide();
+        $gameArea.hide();
+        $nameContainer.hide();
+    });
+
+    $userForm.submit(function (e) {
+        e.preventDefault();
+        socket.emit('new user', $userName.val(), function (data) {
+            if (data) {
+                $userFormArea.hide();
+                $onlineUsersArea.show();
+                $myName.append($userName.val());
+            }
+        });
+    });
+
+    socket.on('get users', function (data) {
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            html += '<li class="list-group-item"><button style="cursor:pointer;" class="btn btn-default" value="'+data[i].name+
+                '" onclick="sendRequest(this)">'+data[i].name;
+            if(data[i].id === socket.id) {
+                html += '(you)</button></li>';
+            } else {
+                html += '</button></li>'
+            }
+        }
+        $users.html(html);
+    });
+
+    function send() {
+        socket.emit('send word', {
+            sentWord: $wordInput.val(),
+            game: currentGame
         });
     }
-    socket.on('newplayer', function (data) {
-        playerID = data.player
+
+    function sendRequest(player) {
+        socket.emit('new challenge', {
+            playerChallenged: player.value
+        });
+    }
+
+    socket.on('update challenges', function (data) {
+        myChallenges = [];
+        var html = '';
+        var challenger;
+        console.log(data.length);
+        if (data.length !== 0) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].challengedPlayer.id === data[i].challengerPlayer.id) {
+                    alert("You're challenging yourself? That's pretty sad. Unfortunately you can't do that anyway.");
+                    socket.emit('delete challenge', data[i].challengerPlayer.name);
+                    return;
+                }
+                if (data[i].challengedPlayer.id === socket.id) {
+                    myChallenges.push(data[i]);
+                    challenger = data[i].challengerPlayer.name;
+                    console.log("You've been challenged by " + challenger + "!");
+                    html += '<li class="list-group-item">' +
+                        'You have been challenged by ' + challenger + '.&emsp;' +
+                        '<button onclick="acceptChallenge(' + i + ')" class="btn btn-success">Accept</button>' +
+                        '&nbsp;<button onclick="declineChallenge(' + i + ')" class="btn btn-warning">Decline</button></li>';
+                } else {
+                    html += '<li class="list-group-item">You have challenged someone! You can wait for their response or challenge someone else</li>'
+                }
+            }
+        } else {
+            html += '<li class="list-group-item">You currently have no challenges</li>'
+        }
+
+        $challenges.html(html);
+    });
+
+    function acceptChallenge(id) {
+        var name = myChallenges[id].challengerPlayer.name;
+        socket.emit('start new game', name);
+    }
+
+    function declineChallenge(id) {
+        var name = myChallenges[id].challengerPlayer.name;
+        socket.emit('delete challenge', name);
+    }
+
+    socket.on('new game', function (data) {
+        $onlineUsersArea.hide();
+        $gameArea.show();
+        currentGame = data;
+        $wordToWrite.html(currentGame.currentWord);
+        if (currentGame.playerOne.id === socket.id) {
+            $opName.append(currentGame.playerTwo.name);
+        } else {
+            $opName.append(currentGame.playerOne.name);
+        }
+        $nameContainer.show();
+    });
+
+    socket.on('new word', function (data) {
+        currentGame = data;
+        $wordInput.val('');
+        $wordToWrite.html(currentGame.currentWord);
+    });
+
+    socket.on('word incorrect', function(data) {
+        $messages.html(data.message);
+    });
+
+    socket.on('round win', function(data) {
+        $messages.html(data.message);
+    });
+
+    socket.on('round loss', function(data) {
+        $messages.html(data.message);
+    });
+
+    socket.on('update scores', function(data) {
+        var html = '';
+        html += '<li class="list-group-item"><p>Word was: '+ data.word +'</p>&emsp;' +
+            '<p>Winner: '+ data.winner +'</p>&emsp;<p>Loser: '+ data.loser +'</p></li>';
+        $scores.append(html);
     });
 </script>
 </html>
