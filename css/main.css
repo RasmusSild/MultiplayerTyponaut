@@ -4,7 +4,6 @@
 
 html {
     font-family: Arial, sans-serif;
-
 }
 
 body {
@@ -15,26 +14,28 @@ header {
     /*padding-top: 4%;*/
     display: flex;
     background: #5a5062;
-    linear-gradient(bottom right, red, yellow);
     height: 100vh;
     /*padding-bottom: 3%;*/
     justify-content: center;
     align-items: center;
     /*background: linear-gradient(right, #5a5062 , yellow);*/
     background: linear-gradient(135deg, #1e9a8d 0%,#20caae 51%,#7ee8d3 100%);
+    /*position: absolute;*/
 }
 
 
 .flex {
     height: 80vh;
-    width: 70vw;
-    background-color: azure;
+    width: 50vw;
+    background-color: #b1fff8;
+    /*display: none;*/
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-content: center;
-    box-shadow: 0 0 40px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 10px 40px 0 rgba(0,0,0,0.2);
     /*flex-wrap: wrap;*/
+    /*box-shadow: 0px 10px 14px -7px #3e7327;*/
     border-radius: 3px;
 }
 
@@ -52,8 +53,132 @@ header {
     width: 50%;
 }
 
-.btn-success {
-    width: 150px;
-    /*justify-self: center;*/
+
+
+/*.btn-success {*/
+    /*width: 150px;*/
+    /*!*justify-self: center;*!*/
+/*}*/
+
+.form-control {
+    -moz-box-shadow: 0px 10px 14px -7px #3e7327;
+    -webkit-box-shadow: 0px 10px 14px -7px #3e7327;
+    box-shadow: 0px 10px 24px -7px #3e7327;
+    /*background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #77b55a), color-stop(1, #72b352));*/
+    /*background:-moz-linear-gradient(top, #77b55a 5%, #72b352 100%);*/
+    /*background:-webkit-linear-gradient(top, #77b55a 5%, #72b352 100%);*/
+    /*background:-o-linear-gradient(top, #77b55a 5%, #72b352 100%);*/
+    /*background:-ms-linear-gradient(top, #77b55a 5%, #72b352 100%);*/
+    /*background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77b55a', endColorstr='#72b352',GradientType=0);
+    /*background-color:#77b55a;*/
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    border:1px solid #4b8f29;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:14px;
+    font-weight:bold;
+    padding:11px 25px;
+    text-decoration:none;
+    margin-right: 3px;
 }
 
+.gamebuttons {
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*justify-content: space-around;*/
+}
+
+.btn-success {
+    -moz-box-shadow: 0px 10px 14px -7px #3e7327;
+    -webkit-box-shadow: 0px 10px 14px -7px #3e7327;
+    box-shadow: 0px 10px 24px -7px #3e7327;
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #77b55a), color-stop(1, #72b352));
+    background:-moz-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-webkit-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-o-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-ms-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77b55a', endColorstr='#72b352',GradientType=0);
+    background-color:#77b55a;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    border:1px solid #4b8f29;
+    /*display:inline-block;*/
+    cursor:pointer;
+    color:#ffffff;
+    font-size:14px;
+    font-weight:bold;
+    padding:11px 25px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #5b8a3c;
+}
+.btn-success:hover {
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #72b352), color-stop(1, #77b55a));
+    background:-moz-linear-gradient(top, #72b352 5%, #77b55a 100%);
+    background:-webkit-linear-gradient(top, #72b352 5%, #77b55a 100%);
+    background:-o-linear-gradient(top, #72b352 5%, #77b55a 100%);
+    background:-ms-linear-gradient(top, #72b352 5%, #77b55a 100%);
+    background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#72b352', endColorstr='#77b55a',GradientType=0);
+    background-color:#72b352;
+}
+.btn-success:active {
+    position:relative;
+    top:1px;
+}
+
+
+#findOP {
+    display: none;
+}
+
+.myButton {
+    -moz-box-shadow: 0px 10px 14px -7px #3e7327;
+    -webkit-box-shadow: 0px 10px 14px -7px #3e7327;
+    box-shadow: 0px 10px 14px -7px #3e7327;
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #77b55a), color-stop(1, #72b352));
+    background:-moz-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-webkit-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-o-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:-ms-linear-gradient(top, #77b55a 5%, #72b352 100%);
+    background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+    /*filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77b55a', endColorstr='#72b352',GradientType=0);*/
+    background-color:#77b55a;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    border:3px solid #4b8f29;
+    /*display:inline-block;*/
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:16px;
+    font-weight:bold;
+    padding:13px 30px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #5b8a3c;
+}
+.myButton:hover {
+    text-decoration: none;
+    background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #72b352), color-stop(1, #77b55a));
+    background:-moz-linear-gradient(top, #579149 5%, #77b55a 100%);
+    background:-webkit-linear-gradient(top, #579149 5%, #77b55a 100%);
+    background:-o-linear-gradient(top, #579149 5%, #77b55a 100%);
+    background:-ms-linear-gradient(top, #579149 5%, #77b55a 100%);
+    background:linear-gradient(to bottom, #579149 5%, #77b55a 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#72b352', endColorstr='#77b55a',GradientType=0);
+    background-color: #579149;
+    color: #0c0c0c;
+}
+.myButton:active {
+    position:relative;
+    top:1px;
+}

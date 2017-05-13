@@ -4,22 +4,29 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typonaut</title>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+<!--    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">-->
     <link rel="stylesheet" href="../css/main.css"/>
 </head>
 
 <body>
 
 <header>
+    <div class="gamebuttons">
+        <button href="#" class="myButton" id="start">START</button>
+        <button href="#" class="myButton" id="findOP">FIND OPPONENT</button>
+    </div>
+
+
     <div class="flex">
         <div class="form-group">
             <div class="input-group">
                 <input type="text" class="form-control" id="word">
                 <!--<span class="input-group-btn">-->
-                <button class="btn btn-success" type="button" onclick="send(word.value)">Send</button>
+                <button class="btn btn-success" type="button" onclick="send(word.value)">Enter</button>
+                <!--<a href="#" class="btn-success">Enter</a>-->
                 <!--</span>-->
             </div>
         </div>
@@ -30,9 +37,11 @@
 </body>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/js/jquery-3.1.0.min.js"></script>
+<script src="/js/app.js"></script>
 
 <script>
+
     var socket = io();
     var playerID;
     function send(word) {
@@ -43,5 +52,13 @@
     socket.on('newplayer', function (data) {
         playerID = data.player
     });
+
+    $(document).ready(function () {
+        $("#start").click(function () {
+            $(".flex").css("display", "none");
+        });
+    });
+
+
 </script>
 </html>
