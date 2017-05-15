@@ -14,7 +14,7 @@ body {
     background: linear-gradient(125deg, #1e9a8d 0%,#20caae 51%,#7ee8d3 100%);
 }
 
-
+/*---BUTTONS---*/
 .btn-primary{
     background: #ebac38;
     border-color: #1e9a8d;
@@ -24,13 +24,17 @@ body {
     border-color: #1e9a8d;
 }
 
-.btn-warning {
+.btn-warning, #leaveButton {
     background: #d04032;
 }
 
-.btn-warning:hover {
+.btn-warning:hover, #leaveButton:hover {
     background: #aa3d30;
 }
+
+#leaveButton {
+    margin-top: 10px;
+ }
 
 
 .input-group >.btn-success {
@@ -43,6 +47,8 @@ body {
     background: #cb9633;
     border-color: #1e9a8d;
 }
+
+/*---------------*/
 
 .list-group-item {
     background-color: #f1eedf;
@@ -76,14 +82,26 @@ body {
 
 
 #onlineUsers {
-    margin-top: 7vh;
+    margin-top: 10vh;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
+@media (max-width: 600px) {
+    #onlineUsers {
+        margin-left: 10px;
+        flex-direction: column;
+        float: left;
+
+    }
+    .col-xs-9 > .well {
+        margin-top: 30px;
+    }
+}
+
 #nameContainer {
-    margin-top: 10px;
+    margin-top: 10vh;
     margin-left: 10px;
     /*text-align: left;*/
     /*display: flex;*/

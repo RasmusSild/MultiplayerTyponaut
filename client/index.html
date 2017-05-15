@@ -24,6 +24,7 @@
                     <h4 id="myName">Me: </h4>
                     <h4 id="opName">Opponent: </h4>
                 </div>
+                <button class="btn btn-error" id="leaveButton" type="button" onclick="leaveGame()">Leave Game</button>
             </div>
         </div>
     </div>
@@ -74,7 +75,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" id="wordInput">
                         <!--<span class="input-group-btn">-->
-                        <button class="btn btn-success" type="button" onclick="send($wordInput.value)">Send</button>
+                        <button class="btn btn-success" id="sendButton" type="button" onclick="send($wordInput.value)">Send</button>
                         <!--</span>-->
                     </div>
                     <h4 id="messageContainer"></h4>
@@ -112,8 +113,10 @@
     var $nameContainer = $("#nameContainer");
     var $myName = $("#myName");
     var $opName = $("#opName");
+    var $sendButton = $("#sendButton");
     var myChallenges = [];
     var currentGame;
+    var roundCount = 1;
 
     $(document).ready(function () {
         $onlineUsersArea.hide();
@@ -179,7 +182,7 @@
                         'You have been challenged by ' + challenger + '.&emsp;' +
                         '<button onclick="acceptChallenge(' + i + ')" class="btn btn-success">Accept</button>' +
                         '&nbsp;<button onclick="declineChallenge(' + i + ')" class="btn btn-warning">Decline</button></li>';
-                } else {
+                } else if (data[i].challengerPlayer.id === socket.id) {
                     html += '<li class="list-group-item">You have challenged someone! You can wait for their response or challenge someone else</li>'
                 }
             }
@@ -188,9 +191,12 @@
         }
 
         $challenges.html(html);
+        console.log(myChallenges);
     });
 
     function acceptChallenge(id) {
+        console.log("My challenges called from accept");
+        console.log(myChallenges);
         var name = myChallenges[id].challengerPlayer.name;
         socket.emit('start new game', name);
     }
@@ -231,11 +237,31 @@
         $messages.html(data.message);
     });
 
+    socket.on('opponent left', function (data) {
+        $sendButton.prop("disabled",true);
+        $wordInput.prop("disabled",true);
+        $messages.html("Opponent has left the game. Please press Leave Game to return to the lobby.");
+    });
+
+    function leaveGame() {
+        socket.emit('leave game');
+        $sendButton.prop("disabled",false);
+        $wordInput.prop("disabled",false);
+        $gameArea.hide();
+        $onlineUsersArea.show();
+        $nameContainer.hide();
+        $opName.html('Opponent: ');
+        $messages.html('');
+        $scores.html('');
+        roundCount = 1;
+    }
+
     socket.on('update scores', function (data) {
         var html = '';
-        html += '<li class="list-group-item"><p>Word was: ' + data.word + '</p>&emsp;' +
+        html += '<li class="list-group-item"><p>Round: '+ roundCount++ +'</p>&emsp;<p>Word was: ' + data.word + '</p>&emsp;' +
             '<p>Winner: ' + data.winner + '</p>&emsp;<p>Loser: ' + data.loser + '</p></li>';
         $scores.append(html);
     });
+
 </script>
 </html>
