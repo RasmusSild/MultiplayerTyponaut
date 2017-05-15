@@ -85,8 +85,16 @@ body {
 #nameContainer {
     margin-top: 10px;
     margin-left: 10px;
-    text-align: left;
+    /*text-align: left;*/
+    /*display: flex;*/
+    /*flex-direction: column;*/
     /*float: left;*/
+}
+
+#nameDiv {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
 #challengesField {
