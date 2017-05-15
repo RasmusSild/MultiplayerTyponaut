@@ -19,17 +19,6 @@ games = [];
 
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket) {
-    //socket.id = Math.floor(Math.random() * 1000);
-    //console.log('socket ' + socket.id + ' connected');
-    //SOCKET_LIST[socket.id] = socket;
-    
-    /*socket.emit('newplayer', {
-        player: socket.id
-    });*/
-    
-    socket.on('test', function(data) {
-        console.log(data.player + ' is correct!');
-    });
 
     socket.on('new challenge', function(data) {
         var playerChallenged = _.find(users, function(user) { return user.name === data.playerChallenged; });
@@ -38,7 +27,6 @@ io.sockets.on('connection', function(socket) {
         challenges = _.reject(challenges, thisChallenge); //reject duplicate challenges
         challenges.push(thisChallenge);
         updateChallenges();
-        console.log(challenges);
     });
     
     socket.on('disconnect', function() {
@@ -48,13 +36,37 @@ io.sockets.on('connection', function(socket) {
         }
         updateUserNames();
         console.log('socket ' + socket.username + ' has disconnected');
-        console.log(users);
+        var deleteChallenges = _.find(challenges, function(challenge) {
+            return challenge.challengedPlayer.id === socket.id;
+        });
+
+        if (deleteChallenges) {
+            console.log("Delete challenges: " + deleteChallenges + " of user "+ socket.username);
+            _.pull(challenges, deleteChallenges);
+            updateChallenges();
+        }
+
+        var deleteGame = _.find(games, function(game) {
+            return game.playerOne.id === socket.id || game.playerTwo.id === socket.id ;
+        });
+
+        if (deleteGame) {
+            console.log("Delete game: " + deleteGame + " of user "+ socket.username);
+            _.pull(games, deleteGame);
+            if (deleteGame.playerOne.id === socket.id) {
+                io.to(deleteGame.playerTwo.id).emit('opponent left');
+            } else {
+                io.to(deleteGame.playerOne.id).emit('opponent left');
+            }
+
+        }
+        console.log("Users on server: " + users.length);
+
     });
 
     socket.on('new user', function(data, callback) {
         callback(true);
         socket.username = data;
-        console.log(users.indexOf(socket.username, 0));
         if (users.indexOf(socket.username, 0) >= 0) {
             var userTemp = socket.username + Math.floor(Math.random() * 1000)
             users.push({name: userTemp, id: socket.id});
@@ -63,39 +75,27 @@ io.sockets.on('connection', function(socket) {
             users.push({name: socket.username, id: socket.id});
             console.log(socket.username + " has joined the server!");
         }
-        console.log(users);
+        console.log("Users on server: " + users.length);
         updateUserNames();
     });
 
     socket.on('delete challenge', function(challenger) {
-        //if (_.includes(challenges, data)) _.pull(challenges, data);
         var deletion = _.find(challenges, function(challenge) {
             return challenge.challengedPlayer.id === socket.id && challenge.challengerPlayer.name === challenger;
         });
 
         if (deletion) {
-            console.log(deletion);
+            console.log("Deleting challenge(s) for " + deletion.challengedPlayer.username);
             _.pull(challenges, deletion);
+            io.to(deletion.challengedPlayer.id).emit('message challengedPlayer', challenges);
+            updateChallenges();
         }
-
-        io.to(deletion.challengedPlayer.id).emit('message challengedPlayer', challenges);
-        console.log(challenges);
-    });
-
-    socket.on('get new word', function(data) {
-        var word = getRandomWord();
-        console.log(word);
-    });
-
-    socket.on('update scores', function(data) {
-
     });
 
     socket.on('send word', function(data) {
         var sentWord = data.sentWord;
         var actualWord = data.game.currentWord;
-        console.log(sentWord);
-        console.log(actualWord);
+        console.log("User "+ socket.username + " sent word " + sentWord + ", actual word is " + actualWord);
         if (compareWords(sentWord, actualWord)) {
             socket.emit('round win', {
                 winner: socket.username,
@@ -166,19 +166,37 @@ io.sockets.on('connection', function(socket) {
             return challenge.challengedPlayer.id === socket.id && challenge.challengerPlayer.name === challenger;
         });
 
+        var allChallengesOfSocket = _.find(challenges, function(challenge) {
+            return challenge.challengedPlayer.id === socket.id || challenge.challengerPlayer.id === socket.id;
+        });
+
         if (challengeExists) {
             challenges = _.reject(challenges, challengeExists);
+            challenges = _.reject(challenges, allChallengesOfSocket);
+            updateChallenges();
             var newGame = {playerOne: challengeExists.challengerPlayer, playerTwo: challengeExists.challengedPlayer,
             currentWord: getRandomWord()};
             games.push(newGame);
             io.to(challengeExists.challengerPlayer.id).emit('new game', newGame);
             io.to(challengeExists.challengedPlayer.id).emit('new game', newGame);
-            console.log(newGame);
+            console.log("Starting game between " + challengeExists.challengerPlayer.name +
+                " & " + challengeExists.challengedPlayer.name);
         }
     });
 
-    socket.on('new word request', function (data) {
-
+    socket.on('leave game', function () {
+        var findGame = _.find(games, function(game) {
+            return game.playerOne.id === socket.id || game.playerTwo.id === socket.id;
+        });
+        if (findGame) {
+            console.log("User " + socket.username + " left game");
+            _.pull(games, findGame);
+            if (findGame.playerOne.id === socket.id) {
+                io.to(findGame.playerTwo.id).emit('opponent left');
+            } else {
+                io.to(findGame.playerOne.id).emit('opponent left');
+            }
+        }
     });
 
     function updateUserNames() {
@@ -187,6 +205,15 @@ io.sockets.on('connection', function(socket) {
 
     function updateChallenges() {
         io.sockets.emit('update challenges', challenges);
+        if (challenges.length > 0) {
+            console.log("Active challenges: ");
+        } else {
+            console.log("No active challenges!");
+        }
+        for (var i = 0; i < challenges.length; i++) {
+            console.log(challenges[i]);
+        }
+
     }
 
     function getRandomWord() {
