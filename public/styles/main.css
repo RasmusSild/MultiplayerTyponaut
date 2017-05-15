@@ -82,6 +82,18 @@ body {
     justify-content: space-between;
 }
 
+@media (max-width: 600px) {
+    #onlineUsers {
+        margin-left: 10px;
+        flex-direction: column;
+        float: left;
+
+    }
+    .col-xs-9 > .well {
+        margin-top: 30px;
+    }
+}
+
 #nameContainer {
     margin-top: 10px;
     margin-left: 10px;
