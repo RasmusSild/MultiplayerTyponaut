@@ -2,8 +2,9 @@
     box-sizing: border-box;
 }
 
+
 html {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
 
 }
 
@@ -14,7 +15,9 @@ body {
     background: linear-gradient(125deg, #1e9a8d 0%,#20caae 51%,#7ee8d3 100%);
 }
 
-/*---BUTTONS---*/
+
+
+/*------------------------BUTTONS----------*/
 .btn-primary{
     background: #ebac38;
     border-color: #1e9a8d;
@@ -47,8 +50,7 @@ body {
     background: #cb9633;
     border-color: #1e9a8d;
 }
-
-/*---------------*/
+/*--------------------------------------------*/
 
 .list-group-item {
     background-color: #f1eedf;
@@ -59,11 +61,21 @@ body {
 
 }
 
+#gameField {
+    text-align: center;
+}
+
 #userFormArea {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-around;
     height: 100vh;
     align-items: center;
+}
+#userFormArea > h2 {
+    font-size: 4em;
+    font-family: 'Barrio';
+    align-items: flex-start;
 }
 
 #userLoginField {
@@ -123,29 +135,24 @@ body {
 
 #wordToWrite {
     color: #1c1c1c;
-    background-color: #ebac38;
+    background-color: #f9b73a;
 }
 
 #gameArea {
     display: flex;
     justify-content: center;
+    text-align: center;
 }
 
-/*#userDisplay {
-    background-color: #56a83e;
-}*/
+#count_num {
+    font-size: 3em;
+    margin-top: 50%;
+}
 
-/*.gamefield {*/
-    /*height: 80vh;*/
-    /*width: 70vw;*/
-    /*background-color: azure;*/
-    /*!*display: flex;*!*/
-    /*!*flex-direction: row;*!*/
-    /*!*justify-content: center;*!*/
-    /*!*align-content: center;*!*/
-    /*box-shadow: 0 0 40px 0 rgba(0,0,0,0.2);*/
-    /*!*flex-wrap: wrap;*!*/
-    /*border-radius: 3px;*/
-/*}*/
+.hidden {
+    display: none;
+}
+
+
 
 

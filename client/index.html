@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Typonaut</title>
+    <link href="https://fonts.googleapis.com/css?family=Barrio" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Barrio|Roboto" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="../public/styles/main.css">
@@ -13,11 +15,12 @@
 
 <body>
 
+
 <!--TODO create start game view-->
 
 
 <div id="gameField">
-    <div class="container" id="nameContainer" style="margin-bottom:50px;">
+    <div class="container hidden" id="nameContainer" style="margin-bottom:50px;">
         <div class="row">
             <div class="col-xs-2">
                 <div id="nameDiv" class="list-group-item">
@@ -29,7 +32,7 @@
         </div>
     </div>
 
-    <div class="container" id="onlineUsers" style="margin-bottom:100px;">
+    <div class="container hidden" id="onlineUsers" style="margin-bottom:100px;">
         <div class="row">
             <div class="col-xs-3">
                 <div class="well">
@@ -51,12 +54,13 @@
         </div>
     </div>
 
-    <div class="container" id="userFormArea">
+    <div class="container hidden" id="userFormArea">
+        <h2>Welcome to the TYPONAUT game</h2>
         <div class="row">
                 <div class="col-xs-4">
                     <form id="userForm">
                         <div class="form-group" id="userLoginField">
-                            <label for="username">Enter Username</label>
+                            <label for="username">Enter Username here:</label>
                             <input class="form-control" id="username"/>
                             <br>
                             <input type="submit" class="btn btn-primary" value="Enter"/>
@@ -66,7 +70,9 @@
         </div>
     </div>
 
-    <div class="container" id="gameArea">
+    <span id="count_num">3</span>
+
+    <div class="container hidden" id="gameArea">
         <div class="flex row">
             <div class="col-xs-4">
                 <div class="form-group col-xs-4">
@@ -117,9 +123,12 @@
     var currentGame;
 
     $(document).ready(function () {
+//        TODO hide elements when refresh
+        $userFormArea.fadeIn(500);
         $onlineUsersArea.hide();
-        $gameArea.hide();
-        $nameContainer.hide();
+        $gameArea.hide().removeClass("hidden");
+        $nameContainer.hide().removeClass("hidden");
+        $('#count_num').hide();
     });
 
     $userForm.submit(function (e) {
@@ -127,7 +136,7 @@
         socket.emit('new user', $userName.val(), function (data) {
             if (data) {
                 $userFormArea.hide();
-                $onlineUsersArea.show();
+                $onlineUsersArea.fadeIn(1000).show(100);
                 $myName.append($userName.val());
             }
         });
@@ -202,8 +211,9 @@
     }
 
     socket.on('new game', function (data) {
+        $('#count_num').fadeIn("slow");
         $onlineUsersArea.hide();
-        $gameArea.show();
+//        $gameArea.show("slow");
         currentGame = data;
         $wordToWrite.html(currentGame.currentWord);
         if (currentGame.playerOne.id === socket.id) {
@@ -211,7 +221,28 @@
         } else {
             $opName.append(currentGame.playerOne.name);
         }
-        $nameContainer.show();
+//        $nameContainer.show("fast");
+
+//        TODO COUNTER
+        function endCountdown() {
+            $('#count_num').hide('fast');
+            $gameArea.show("slow");
+            $nameContainer.show("fast");
+        };
+
+        function handleTimer() {
+            if(count === 0) {
+                clearInterval(timer);
+                endCountdown();
+            } else {
+                $('#count_num').html(count);
+                count--;
+            }
+        };
+
+        var count = 3;
+        var timer = setInterval(function() { handleTimer(count); }, 1000);
+
     });
 
     socket.on('new word', function (data) {
@@ -238,5 +269,6 @@
             '<p>Winner: ' + data.winner + '</p>&emsp;<p>Loser: ' + data.loser + '</p></li>';
         $scores.append(html);
     });
+
 </script>
 </html>
