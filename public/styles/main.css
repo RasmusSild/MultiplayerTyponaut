@@ -12,6 +12,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
+    /*width: 100%;*/
     background: linear-gradient(125deg, #1e9a8d 0%,#20caae 51%,#7ee8d3 100%);
 }
 
@@ -62,6 +63,7 @@ body {
 }
 
 #gameField {
+    width: 100vw;
     text-align: center;
 }
 
@@ -83,6 +85,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 130px;
 }
 
 .container h3 {
@@ -115,6 +118,7 @@ body {
 #nameContainer {
     margin-top: 10vh;
     margin-left: 10px;
+    width: auto;
     /*text-align: left;*/
     /*display: flex;*/
     /*flex-direction: column;*/
@@ -133,7 +137,7 @@ body {
 }
 
 
-#wordToWrite {
+#highlight {
     color: #1c1c1c;
     background-color: #f9b73a;
 }
