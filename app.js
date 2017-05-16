@@ -36,15 +36,12 @@ io.sockets.on('connection', function(socket) {
         }
         updateUserNames();
         console.log('socket ' + socket.username + ' has disconnected');
-        var deleteChallenges = _.find(challenges, function(challenge) {
-            return challenge.challengedPlayer.id === socket.id;
-        });
 
-        if (deleteChallenges) {
-            console.log("Delete challenges: " + deleteChallenges + " of user "+ socket.username);
-            _.pull(challenges, deleteChallenges);
-            updateChallenges();
-        }
+        console.log("Delete challenges of user "+ socket.username);
+        _.reject(challenges, function(challenge) {
+            return challenge.challengedPlayer.id === socket.id || challenge.challengerPlayer.id === socket.id;
+        });
+        updateChallenges();
 
         var deleteGame = _.find(games, function(game) {
             return game.playerOne.id === socket.id || game.playerTwo.id === socket.id ;
@@ -153,26 +150,19 @@ io.sockets.on('connection', function(socket) {
         }
     });
 
-    socket.on('round loss', function(data) {
-
-    });
-
-    socket.on('round win', function(data) {
-
-    });
-
     socket.on('start new game', function (challenger) {
         var challengeExists = _.find(challenges, function(challenge) {
             return challenge.challengedPlayer.id === socket.id && challenge.challengerPlayer.name === challenger;
         });
 
-        var allChallengesOfSocket = _.find(challenges, function(challenge) {
-            return challenge.challengedPlayer.id === socket.id || challenge.challengerPlayer.id === socket.id;
-        });
-
         if (challengeExists) {
             challenges = _.reject(challenges, challengeExists);
-            challenges = _.reject(challenges, allChallengesOfSocket);
+            challenges = _.reject(challenges, function(challenge) {
+                return challenge.challengedPlayer.id === socket.id || challenge.challengerPlayer.id === socket.id;
+            });
+            challenges = _.reject(challenges, function(challenge) {
+                return challenge.challengedPlayer.name === challenger || challenge.challengerPlayer.name === challenger;
+            });
             updateChallenges();
             var newGame = {playerOne: challengeExists.challengerPlayer, playerTwo: challengeExists.challengedPlayer,
             currentWord: getRandomWord()};
