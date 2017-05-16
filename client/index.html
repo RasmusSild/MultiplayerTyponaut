@@ -218,7 +218,7 @@
         $onlineUsersArea.hide();
 //        $gameArea.show("slow");
         currentGame = data;
-        $wordToWrite.html(currentGame.currentWord).wrap("<span id='highlight'></span>");
+        $wordToWrite.html('<span id="highlight">' + currentGame.currentWord + '</span>');
         if (currentGame.playerOne.id === socket.id) {
             $opName.append(currentGame.playerTwo.name);
         } else {
