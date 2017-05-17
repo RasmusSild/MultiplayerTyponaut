@@ -38,7 +38,7 @@ io.sockets.on('connection', function(socket) {
         console.log('socket ' + socket.username + ' has disconnected');
 
         console.log("Delete challenges of user "+ socket.username);
-        _.reject(challenges, function(challenge) {
+        challenges = _.reject(challenges, function(challenge) {
             return challenge.challengedPlayer.id === socket.id || challenge.challengerPlayer.id === socket.id;
         });
         updateChallenges();
@@ -64,7 +64,9 @@ io.sockets.on('connection', function(socket) {
     socket.on('new user', function(data, callback) {
         callback(true);
         socket.username = data;
-        if (users.indexOf(socket.username, 0) >= 0) {
+        if (_.find(users, function(user) {
+                return user.name === socket.username;
+            })) {
             var userTemp = socket.username + Math.floor(Math.random() * 1000)
             users.push({name: userTemp, id: socket.id});
             console.log(userTemp + " has joined the server!");
