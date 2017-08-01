@@ -4,18 +4,19 @@ var serv = require('http').Server(app);
 var _ = require('lodash');
 var wordList =  require('./words').wordList;
 
+app.use('/public', express.static(__dirname + '/public'));
+app.use('/client', express.static(__dirname + '/client'));
+
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/client/index.html');
 });
-app.use('/public', express.static(__dirname + '/public'));
-app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen(8080);
 console.log("Server started at port 8080");
 
-users = [];
-challenges = [];
-games = [];
+var users = [];
+var challenges = [];
+var games = [];
 
 var io = require('socket.io')(serv,{});
 io.sockets.on('connection', function(socket) {
@@ -28,7 +29,7 @@ io.sockets.on('connection', function(socket) {
         challenges.push(thisChallenge);
         updateChallenges();
     });
-    
+
     socket.on('disconnect', function() {
         if (!socket.username) return;
         for (var i = 0; i < users.length; i++) {
@@ -67,7 +68,7 @@ io.sockets.on('connection', function(socket) {
         if (_.find(users, function(user) {
                 return user.name === socket.username;
             })) {
-            var userTemp = socket.username + Math.floor(Math.random() * 1000)
+            var userTemp = socket.username + Math.floor(Math.random() * 1000);
             users.push({name: userTemp, id: socket.id});
             console.log(userTemp + " has joined the server!");
         } else {
@@ -132,17 +133,18 @@ io.sockets.on('connection', function(socket) {
                     game: data.game
                 });
             }
+
             var game = _.find(games, function(game) {
                 return game.playerOne.id === socket.id || game.playerTwo.id === socket.id;
             });
             if (game) {
                 game.currentWord = getRandomWord();
             }
-            function sendRequests(){
-                io.to(game.playerOne.id).emit('new word', game);
-                io.to(game.playerTwo.id).emit('new word', game);
-            }
-            setTimeout(sendRequests, 3000);
+
+            setTimeout(function(){
+              io.to(game.playerOne.id).emit('new word', game);
+              io.to(game.playerTwo.id).emit('new word', game);
+             }, 3000);
 
         } else {
             socket.emit('word incorrect', {
@@ -217,5 +219,3 @@ io.sockets.on('connection', function(socket) {
     }
 
 });
-
-
